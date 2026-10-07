@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.spring.logstream";
+
+
+service LogService {
+  rpc IngestLog(LogEventGrpcRequest) returns (GrpcLogEvent);
+}
+
+message LogEventGrpcRequest {
+  string eventId = 1;
+  int64 eventTime = 2;
+  string message = 3;
+  GrpcLogSeverity severity = 4;
+  string source = 5;
+  string traceId = 6;
+}
+
+enum GrpcLogSeverity {
+    ERROR = 0;
+    WARN = 1;
+    INFO = 2;
+    DEBUG = 3;
+}
+
+message GrpcLogEvent {
+  string eventId = 1;
+  int64 eventTime = 2;
+  string message = 3;
+  GrpcLogSeverity severity = 4;
+  string source = 5;
+  string traceId = 6;
+  int32 schemaVersion = 7;
+  int64 ingestedAt = 8;
+}
