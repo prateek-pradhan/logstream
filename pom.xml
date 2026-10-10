@@ -19,6 +19,7 @@
 		<module>ingestion-gateway</module>
 		<module>app</module>
 		<module>benchmarks</module>
+		<module>kafka-labs</module>
 	</modules>
 
 	<properties>
