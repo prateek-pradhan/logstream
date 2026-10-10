@@ -2,11 +2,10 @@ package com.spring.logstream.ingestion.service.impl;
 
 import com.spring.logstream.common.dto.HttpLogEventRequest;
 import com.spring.logstream.common.envelope.LogEvent;
+import com.spring.logstream.ingestion.exceptions.InvalidArgumentException;
 import com.spring.logstream.ingestion.service.LogService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -16,7 +15,7 @@ public class LogServiceImpl implements LogService {
     public LogEvent ingestLog(HttpLogEventRequest logEvent) {
 
         if (logEvent.getEventTime() > System.currentTimeMillis() + 1000) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid event time");
+            throw new InvalidArgumentException("Invalid event time");
         }
 
         long ingestedAt = System.currentTimeMillis();

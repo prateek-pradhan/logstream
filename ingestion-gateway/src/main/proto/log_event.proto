@@ -6,6 +6,7 @@ option java_package = "com.spring.logstream";
 
 service LogService {
   rpc IngestLog(LogEventGrpcRequest) returns (GrpcLogEvent);
+  rpc IngestLogStream(stream LogEventGrpcRequest) returns (stream GrpcLogEventList);
 }
 
 message LogEventGrpcRequest {
@@ -33,4 +34,16 @@ message GrpcLogEvent {
   string traceId = 6;
   int32 schemaVersion = 7;
   int64 ingestedAt = 8;
+}
+
+message GrpcErrorLog {
+  string eventId = 1;
+  string errorMessage = 2;
+}
+
+message GrpcLogEventList {
+  int32 successfulLogs = 1;
+  repeated GrpcLogEvent logEvents = 2;
+  repeated GrpcErrorLog errorLogs = 3;
+  int32 failedLogs = 4;
 }
