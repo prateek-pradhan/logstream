@@ -22,4 +22,9 @@ public class GrpcServerConfiguration {
     public GrpcServerLifecycle server(Server server) {
         return new GrpcServerLifecycle(server);
     }
+
+    @Bean
+    public GrpcExceptionHandlingServerInterceptor grpcExceptionHandlingServerInterceptor() {
+        return new GrpcExceptionHandlingServerInterceptor();
+    }
 }

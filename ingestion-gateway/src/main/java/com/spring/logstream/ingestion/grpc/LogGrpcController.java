@@ -59,7 +59,6 @@ public class LogGrpcController extends LogServiceGrpc.LogServiceImplBase {
             @Override
             public void onError(Throwable throwable) {
                 log.error("Stream aborted by client: {}", throwable.getMessage());
-                System.err.println("Stream aborted by client: " + throwable.getMessage());
             }
 
             @Override
