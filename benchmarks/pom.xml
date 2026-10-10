@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.spring</groupId>
+		<artifactId>logstream</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<artifactId>benchmarks</artifactId>
+	<packaging>jar</packaging>
+	<name>benchmarks</name>
+
+	<properties>
+		<!-- JMH's own release line; unrelated to Spring Boot's version -->
+		<jmh.version>1.37</jmh.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.spring</groupId>
+			<artifactId>common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<!-- Jackson 3's new groupId/package namespace, matching what Spring
+		     Boot 4.1.1's own Jackson auto-configuration actually resolves to
+		     (and what `common` already uses), not the older com.fasterxml one. -->
+		<dependency>
+			<groupId>tools.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- the actual benchmarking harness: @Benchmark, @State, @Setup, runner APIs -->
+		<dependency>
+			<groupId>org.openjdk.jmh</groupId>
+			<artifactId>jmh-core</artifactId>
+			<version>${jmh.version}</version>
+		</dependency>
+		<!-- annotation processor: generates the real benchmark runner classes
+		     from your @Benchmark-annotated methods at compile time. You never
+		     call this directly, it just needs to be on the annotation
+		     processor path. -->
+		<dependency>
+			<groupId>org.openjdk.jmh</groupId>
+			<artifactId>jmh-generator-annprocess</artifactId>
+			<version>${jmh.version}</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<!-- the root POM binds annotationProcessorPaths at the default-compile
+				     EXECUTION level, not the plugin level. A plugin-level
+				     <configuration> here would never override that inherited
+				     execution's own config, so jmh-generator-annprocess would
+				     silently never run. Overriding the same execution id instead. -->
+				<executions>
+					<execution>
+						<id>default-compile</id>
+						<configuration>
+							<annotationProcessorPaths>
+								<path>
+									<groupId>org.projectlombok</groupId>
+									<artifactId>lombok</artifactId>
+								</path>
+								<path>
+									<groupId>org.openjdk.jmh</groupId>
+									<artifactId>jmh-generator-annprocess</artifactId>
+									<version>${jmh.version}</version>
+								</path>
+							</annotationProcessorPaths>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- JMH benchmarks must run as a standalone fat jar (java -jar ...),
+			     not inside a test runner or IDE process, that's the only way
+			     to get JIT warm-up and iteration behavior you can trust. The
+			     shade plugin bundles JMH + your benchmark classes + their
+			     dependencies into one executable jar, with JMH's own Main
+			     class as the entry point. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.4.0</version>
+				<executions>
+					<execution>
+						<!-- distinct id so this doesn't merge with the maven-shade-plugin
+						     execution spring-boot-starter-parent's pluginManagement
+						     already defines under the default id -->
+						<id>shade-benchmarks</id>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<finalName>benchmarks</finalName>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>org.openjdk.jmh.Main</mainClass>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

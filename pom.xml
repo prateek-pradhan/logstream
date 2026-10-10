@@ -18,6 +18,7 @@
 		<module>common</module>
 		<module>ingestion-gateway</module>
 		<module>app</module>
+		<module>benchmarks</module>
 	</modules>
 
 	<properties>

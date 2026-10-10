@@ -3,10 +3,13 @@ package com.spring.logstream.common.envelope;
 import com.spring.logstream.common.enums.LogSeverity;
 import lombok.Builder;
 import lombok.Getter;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
 
 @Getter
 @Builder
+@JsonDeserialize(builder = LogEvent.LogEventBuilder.class)
 public class LogEvent {
     private final String eventId;
     private final long eventTime;
@@ -16,4 +19,9 @@ public class LogEvent {
     private final String traceId;
     private final int schemaVersion;
     private final long ingestedAt;
+
+    @JsonPOJOBuilder
+    public static class LogEventBuilder {
+
+    }
 }
