@@ -1,7 +1,9 @@
 package com.spring.logstream.ingestion.grpc;
 
 import io.grpc.*;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GrpcExceptionHandlingServerInterceptor implements ServerInterceptor {
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> serverCall, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
